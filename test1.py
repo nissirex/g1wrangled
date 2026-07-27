@@ -1,3 +1,1 @@
-print ("Hello World")
-print ("Hello Hello")
-print ("Testing merging")
+print ("Hey it's Rex!")
