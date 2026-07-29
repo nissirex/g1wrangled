@@ -1,0 +1,25 @@
+# DATA422 Team Guidelines
+
+## Team Members
+
+### Rexstane Nissi Stanley
+- Preferred name: Rex
+- Preferred communication method: Whatsapp
+- Interests: Photography, Music
+
+### Byron Hayes
+- Preferred name: Byron
+- Preferred communication method: Whatsapp
+- Interests: Gym, Cheerleading
+
+
+### Avish Prakash
+- Prefferred name: Avish
+- Prefferred communication method: Whatsapp
+- Interests: Gardening, Gym, Football, Gaming
+
+
+### Iliana Sarri
+- Preferred name: Iliana
+- Preferred communication method: Whatsapp
+- Interests: Reading, Travelling, Music
