@@ -7,7 +7,7 @@ This repository has been created for our DATA422 group project. It will be used 
 - Rexstane Nissi Stanley
 - Byron Hayes
 - Avish Prakash
-- Iliana Sarri,
+- Iliana Sarri
 
 ## Current Deliverable
 
@@ -24,4 +24,4 @@ For Week 3, the team will demonstrate that:
 
 - `README.md` – overview of the project and repository
 - `.gitignore` – files and folders that Git should not track
-- `[test-file-name]` – shared test file used to practise collaborative editing
+- `test1.py`, 'team_guidelines.md' – shared test file used to practise collaborative editing
