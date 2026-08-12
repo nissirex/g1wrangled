@@ -5,3 +5,11 @@ __pycache__/
 .ipynb_checkpoints/
 .vscode/
 .env
+
+data/*
+!data/raw/
+!data/processed/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
