@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
 
+
+
 # Load the Christchurch dataset
 df = pd.read_csv(
 "data/processed/christchurch_listings_oct2025_jun2026.csv"
@@ -48,4 +50,27 @@ plt.xlabel("Days since last review")
 plt.ylabel("Number of listings")
 plt.title("Distribution of Days Since Last Review")
 
+plt.show()
+
+
+
+price = df[['price']].copy()
+
+# threshold for histogram
+threshold = 1050
+
+#1000+ prices all in this histogram col
+clipped_data = np.clip(price, a_min=None, a_max=threshold)
+
+#missing values
+missingValues = price.isna().sum()  # number of missing values 
+print(f"Missing values in 'price' column: {missingValues}")
+
+
+
+#plotting histogram
+plt.hist(clipped_data, bins=21, range=(0,threshold), edgecolor='black')
+plt.title('Price Distribution')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
 plt.show()
