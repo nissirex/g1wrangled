@@ -74,3 +74,36 @@ plt.title('Price Distribution')
 plt.xlabel('Price')
 plt.ylabel('Frequency')
 plt.show()
+
+# Top 10% of Christchurch properties by number of reviews
+
+df["year_month"] = pd.to_datetime(
+    df["year_month"],
+    format="%Y-%m"
+)
+
+# Sort each property chronologically
+df = df.sort_values("year_month")
+
+# Keep the latest record available for each property
+latest_listings = df.drop_duplicates(
+    subset="id",
+    keep="last"
+)
+
+# Sort by number of reviews
+latest_listings = latest_listings.sort_values(
+    by="number_of_reviews",
+    ascending=False
+)
+
+# Keep top 10%
+top_10_count = int(len(latest_listings) * 0.10)
+
+top_10_percent = latest_listings.head(top_10_count)
+
+print("Unique Christchurch properties:", len(latest_listings))
+print("Properties in top 10%:", len(top_10_percent))
+
+print(top_10_percent)
+
