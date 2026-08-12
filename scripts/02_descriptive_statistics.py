@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 df = pd.read_csv(
     "data/processed/christchurch_listings_oct2025_jun2026.csv"
 )
