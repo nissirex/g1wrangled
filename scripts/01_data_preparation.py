@@ -24,22 +24,22 @@ datasets = []
 for file, date in files:
 
 # Load the CSV file
-df = pd.read_csv(file)
+    df = pd.read_csv(file)
 
 # Convert the date into a date
-date = pd.to_datetime(date, format="%d/%m/%Y")
+    date = pd.to_datetime(date, format="%d/%m/%Y")
 
 # Add the date to every row
-df["Date"] = date
+    df["Date"] = date
 
 # Add a column containing just the month and year
-df["year_month"] = date.strftime("%Y-%m")
+    df["year_month"] = date.strftime("%Y-%m")
 
 # Keep only Christchurch City
-df = df[df["neighbourhood_group"] == "Christchurch City"]
+    df = df[df["neighbourhood_group"] == "Christchurch City"]
 
 # Add the filtered dataset to our list
-datasets.append(df)
+    datasets.append(df)
 
 # 4. Combine all nine Christchurch datasets
 christchurch_data = pd.concat(datasets, ignore_index=True)
