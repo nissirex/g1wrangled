@@ -60,6 +60,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 
 The downloaded Airbnb data files are stored inside the local `data` directory:
 
+```text
 data/
 ├── raw/
 │   ├── listings_October2025.csv
@@ -72,6 +73,7 @@ data/
 │   ├── listings_May2026.csv
 │   └── listings_June2026.csv
 └── processed/
+```
 
 ## Scripts
 
