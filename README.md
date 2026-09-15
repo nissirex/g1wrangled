@@ -17,7 +17,7 @@ This repository has been created for our DATA422 group project. It will be used 
 
 ## Dataset
 
-### Data Source
+### Data Sources
 
 This project uses the `listings.csv` summary dataset provided by [Inside Airbnb](https://insideairbnb.com/get-the-data/).
 
@@ -56,13 +56,55 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `number_of_reviews_ltm` | Integer | The number of reviews received by the listing during the last 12 months. |
 | `license` | Text | The licence, permit or registration number associated with the listing, where one is provided. This field may contain missing values. |
 
+
+
+
+This project also uses the `Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv` summary dataset provided by [Tenancy Services](https://www.tenancy.govt.nz/about-tenancy-services/data-and-statistics/rental-bond-data/).
+
+- **Dataset:** Rental bond data
+- **Geographical coverage:** New Zealand
+- **Dataset period:** January 2020 to April 2026
+- **File name:** `Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv`
+- **File format:** CSV
+- **Source:** Tenancy Services website
+- **Data dictionary:** Tenancy Services Data Dictionary
+
+Each row in the dataset represents one rental property captured at the time the data was collected. The dataset contains aggregated rental bond information about the Timeframe, Location Id, Dwelling Type, Number Of Beds, Total Bonds, Active Bonds, Closed Bonds, Median Rent, Geometric Mean Rent, Upper Quartile Rent, Lower Quartile Rent, and Log Std Dev Weekly Rent.
+
+The original dataset is stored locally by each team member and is not uploaded to GitHub due to its size.
+
+## Data Dictionary
+
+| Column | Data type | Description |
+|---|---|---|
+| `Timeframe` | Date | The start date of the quarter that the data relate to. |
+| `Location Id` | Integer | A numeric identifier for the geographical area. The dataset uses the SA2-2019 geographical boundaries defined by Statistics NZ. Note: The column also allows null values |
+| `Dwelling Type` | Text | The type of dwelling represented by the data. ALL represents all dwelling types combined. |
+| `Number Of Beds` | Integer/Text | The number of bedrooms in the dwelling. ALL represents all bedroom counts combined. |
+| `Total Bonds` | Integer | The total number of rental bonds recorded for the specified timeframe and combination of location, dwelling type, and number of beds. |
+| `Active Bonds` | Integer | The number of rental bonds that were active for the specified timeframe and combination of location, dwelling type, and number of beds. |
+| `Closed Bonds` | Integer | The number of rental bonds that were closed for the specified timeframe and combination of location, dwelling type, and number of beds. |
+| `Median Rent` | Integer | The median weekly rent for the specified group of rental properties. Note: The column also allows null values. |
+| `Geometric Mean Rent` | Integer | The geometric mean of weekly rent. This is used as an alternative measure to the median because rental prices tend to be clustered at round numbers. Note: The column also allows null values. |
+| `Upper Quartile Rent` | Integer | The upper quartile of weekly rent, representing the 75th percentile of the rental distribution. Note: The column also allows null values. |
+| `Lower Quartile Range` | Integer | The lower quartile of weekly rent, representing the 25th percentile of the rental distribution. Note: The column also allows null values. |
+| `Log Std Dev Weekly Rent` | Decimal | The standard deviation of the logarithm of weekly rents, describing the spread of rental prices on the log scale. Note: The column also allows null values. |
+
+
+### Data Limitations
+
+The rental bond data are provisional because Tenancy Services is continuing to migrate information between its legacy and new bond management systems. As a result, recent data may be incomplete or revised, and some recent figures may not be directly comparable with earlier periods. Tenancy Services also applies privacy protection measures, including fixed random rounding and suppression of results where fewer than five bonds are recorded for a particular selection.
+
+
+
 ## Data Storage
 
-The downloaded Airbnb data files are stored inside the local `data` directory:
+The downloaded Airbnb data files and Quarterly Tenancy data files are stored inside the local `data` directory:
 
 ```text
 data/
 ├── raw/
+│   ├── Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv
 │   ├── listings_October2025.csv
 │   ├── listings_November2025.csv
 │   ├── listings_December2025.csv
@@ -77,7 +119,7 @@ data/
 
 ## Scripts
 
-The Python scripts are organised according to the main stages of the Christchurch Airbnb data preparation and analysis.
+The Python scripts are organised according to the main stages of the Christchurch Airbnb and Quarterly Tenancy Bond data preparation and analysis.
 
 | Script | Description |
 | --- | --- |
@@ -85,6 +127,7 @@ The Python scripts are organised according to the main stages of the Christchurc
 | `02_descriptive_statistics.py` | Generates descriptive statistics to explore the main characteristics of the processed Christchurch Airbnb dataset. |
 | `03_analysis_and_visualisation.py` | Performs further analysis and creates visualisations of the Christchurch Airbnb data. |
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
+| `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
 
 ## Christchurch Airbnb Data Cleaning
 
