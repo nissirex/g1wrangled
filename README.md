@@ -9,17 +9,6 @@ This repository has been created for our DATA422 group project. It will be used 
 - Avish Prakash
 - Iliana Sarri
 
-## Current Deliverable
-
-For Week 3, the team will demonstrate that:
-
-- The GitHub group project has been created and organised.
-- Each team member has cloned the repository to their computer.
-- Each team member can pull, edit, commit, and push changes.
-- Each team member can create and work on a separate branch.
-- Branches can be merged back into the main branch.
-- The project task board has been created and updated.
-
 ## Repository Contents
 
 - `README.md` – overview of the project and repository
