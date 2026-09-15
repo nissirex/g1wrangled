@@ -6,6 +6,8 @@ __pycache__/
 .vscode/
 .env
 
+Project/
+
 data/*
 !data/raw/
 !data/processed/
