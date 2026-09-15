@@ -60,6 +60,35 @@ The original dataset is stored locally by each team member and is not uploaded t
 
 The downloaded Airbnb data files are stored inside the local `data` directory:
 
-```text
 data/
-└── listings.csv
+├── raw/
+│   ├── listings_October2025.csv
+│   ├── listings_November2025.csv
+│   ├── listings_December2025.csv
+│   ├── listings_January2026.csv
+│   ├── listings_February2026.csv
+│   ├── listings_March2026.csv
+│   ├── listings_April2026.csv
+│   ├── listings_May2026.csv
+│   └── listings_June2026.csv
+└── processed/
+
+## Scripts
+
+The Python scripts are organised according to the main stages of the Christchurch Airbnb data preparation and analysis.
+
+| Script | Description |
+| --- | --- |
+| `01_data_preparation.py` | Loads and combines the monthly Airbnb datasets, filters the data to Christchurch, and creates the processed Christchurch dataset covering October 2025 to June 2026. |
+| `02_descriptive_statistics.py` | Generates descriptive statistics to explore the main characteristics of the processed Christchurch Airbnb dataset. |
+| `03_analysis_and_visualisation.py` | Performs further analysis and creates visualisations of the Christchurch Airbnb data. |
+| `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
+
+## Christchurch Airbnb Data Cleaning
+
+The combined Christchurch dataset contained 28,795 rows and 20 columns before cleaning.
+
+- **Column removal:** `name`, `host_name`, `license`, and `neighbourhood_group` were removed. `name` and `host_name` were not required for the planned analysis, `license` was entirely missing, and `neighbourhood_group` contained only one value (`Christchurch City`). This reduced the dataset from 20 to 16 columns without removing any rows.
+- **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected.
+- **Missing prices:** 10,667 `price` values (37.04%) were retained as missing because these listings may still be useful when analysing property counts. They will be excluded only from analyses requiring price.
+- **Review data:** 2,627 missing `reviews_per_month` values were set to 0 after confirming that the corresponding listings had no reviews. Missing `last_review` values were retained because listings without reviews have no valid review date.
