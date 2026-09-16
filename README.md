@@ -143,10 +143,10 @@ The combined Christchurch dataset contained 28,795 rows and 20 columns before cl
 
 The tenancy bond dataset contained 27,212  rows and 12 columns before cleaning.
 
-- **Column removal:** no columns were removed due to a lack of knowledge over the dataset and requirements further along for.
-- **Column addition:** added a new column for quarterly months for clarity and use later
-- **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected. numebr of beds remains as string due to "ALL" and "5+" being options. Without further domain knowledge it is hard to know what "ALL" means. 
+- **Column removal:** No columns were removed due to a lack of knowledge over the dataset and requirements further along for.
+- **Column addition:** Added a new column for quarterly months for clarity and use later
+- **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected. Number Of Beds remains as string due to "ALL" and "5+" being options. Without further domain knowledge it is hard to know what "ALL" means. 
 - **Missing values and Observation Review:** location ID had both missing values and "-99". However these rows seem to be totals (however these totals did not match with the sections). these are not removed yet due to a lack of domain knowledge. There are 94 missing values for Geometric Mean Rent, Upper Quartile Rent, Lower Quartile Rent, Log Std Dev Weekly Rent. This missingness corresponds to the missing location ID's and therefore are also not removed yet. 890 obersevations were missing Number of beds, these have not been imputed due to lack of domain knowledge as "ALL" is also in the field.
-- **Duplicates** there are no duplicates in the data.   
+- **Duplicates** There are no duplicates in the data.   
  
 
