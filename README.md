@@ -80,7 +80,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `Timeframe` | Date | The start date of the quarter that the data relate to. |
 | `Location Id` | Integer | A numeric identifier for the geographical area. The dataset uses the SA2-2019 geographical boundaries defined by Statistics NZ. Note: The column also allows null values |
 | `Dwelling Type` | Text | The type of dwelling represented by the data. ALL represents all dwelling types combined. |
-| `Number Of Beds` | Integer/Text | The number of bedrooms in the dwelling. ALL represents all bedroom counts combined. |
+| `Number Of Beds` | Integer/Text | The number of bedrooms in the dwelling. |
 | `Total Bonds` | Integer | The total number of rental bonds recorded for the specified timeframe and combination of location, dwelling type, and number of beds. |
 | `Active Bonds` | Integer | The number of rental bonds that were active for the specified timeframe and combination of location, dwelling type, and number of beds. |
 | `Closed Bonds` | Integer | The number of rental bonds that were closed for the specified timeframe and combination of location, dwelling type, and number of beds. |
