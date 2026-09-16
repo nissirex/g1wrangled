@@ -80,7 +80,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `Timeframe` | Date | The start date of the quarter that the data relate to. |
 | `Location Id` | Integer | A numeric identifier for the geographical area. The dataset uses the SA2-2019 geographical boundaries defined by Statistics NZ. Note: The column also allows null values |
 | `Dwelling Type` | Text | The type of dwelling represented by the data. ALL represents all dwelling types combined. |
-| `Number Of Beds` | Integer/Text | The number of bedrooms in the dwelling. ALL represents all bedroom counts combined. |
+| `Number Of Beds` | Integer/Text | The number of bedrooms in the dwelling. ALL is unknown due to lack of domain knowledge |
 | `Total Bonds` | Integer | The total number of rental bonds recorded for the specified timeframe and combination of location, dwelling type, and number of beds. |
 | `Active Bonds` | Integer | The number of rental bonds that were active for the specified timeframe and combination of location, dwelling type, and number of beds. |
 | `Closed Bonds` | Integer | The number of rental bonds that were closed for the specified timeframe and combination of location, dwelling type, and number of beds. |
@@ -89,6 +89,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `Upper Quartile Rent` | Integer | The upper quartile of weekly rent, representing the 75th percentile of the rental distribution. Note: The column also allows null values. |
 | `Lower Quartile Range` | Integer | The lower quartile of weekly rent, representing the 25th percentile of the rental distribution. Note: The column also allows null values. |
 | `Log Std Dev Weekly Rent` | Decimal | The standard deviation of the logarithm of weekly rents, describing the spread of rental prices on the log scale. Note: The column also allows null values. |
+| `Months` | Quartly months |
 
 
 ### Data Limitations
@@ -128,7 +129,7 @@ The Python scripts are organised according to the main stages of the Christchurc
 | `03_analysis_and_visualisation.py` | Performs further analysis and creates visualisations of the Christchurch Airbnb data. |
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
 | `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
-
+| `06_clean_bond.py` | Produces statistics for missingness and summaries. Cleans the data by correcting data types, making a new column for quarterly intervals.|
 ## Christchurch Airbnb Data Cleaning
 
 The combined Christchurch dataset contained 28,795 rows and 20 columns before cleaning.
@@ -137,3 +138,15 @@ The combined Christchurch dataset contained 28,795 rows and 20 columns before cl
 - **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected.
 - **Missing prices:** 10,667 `price` values (37.04%) were retained as missing because these listings may still be useful when analysing property counts. They will be excluded only from analyses requiring price.
 - **Review data:** 2,627 missing `reviews_per_month` values were set to 0 after confirming that the corresponding listings had no reviews. Missing `last_review` values were retained because listings without reviews have no valid review date.
+
+- ## Tenancy bonds Data Cleaning
+
+The tenancy bond dataset contained 27,212  rows and 12 columns before cleaning.
+
+- **Column removal:** no columns were removed due to a lack of knowledge over the dataset and requirements further along for.
+- **Column addition:** added a new column for quarterly months for clarity and use later
+- **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected. numebr of beds remains as string due to "ALL" and "5+" being options. Without further domain knowledge it is hard to know what "ALL" means. 
+- **Missing values and Observation Review:** location ID had both missing values and "-99". However these rows seem to be totals (however these totals did not match with the sections). these are not removed yet due to a lack of domain knowledge. There are 94 missing values for Geometric Mean Rent, Upper Quartile Rent, Lower Quartile Rent, Log Std Dev Weekly Rent. This missingness corresponds to the missing location ID's and therefore are also not removed yet. 890 obersevations were missing Number of beds, these have not been imputed due to lack of domain knowledge as "ALL" is also in the field.
+- **Duplicates** there are no duplicates in the data.   
+ 
+
