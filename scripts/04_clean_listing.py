@@ -92,12 +92,17 @@ for column in numeric_columns:
         df[column] = pd.to_numeric(df[column], errors="coerce")
 
 # Date columns
-date_columns = ["last_review"]
+date_columns = [
+    "last_review",
+    "Date"
+]
 
 for column in date_columns:
     if column in df.columns:
-        df[column] = pd.to_datetime(df[column], errors="coerce")
-
+        df[column] = pd.to_datetime(
+            df[column],
+            errors="coerce"
+        )
 # Categorical columns
 categorical_columns = [
     "neighbourhood",
