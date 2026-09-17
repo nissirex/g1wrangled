@@ -141,9 +141,3 @@ def main():
 
     print()
     print(f"Saved to: {OUTPUT_FILE}")
-
-
-if __name__ == "__main__":
-    main()
-
-    unmatched = df[df["sa2_code"].isna()]
