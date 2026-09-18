@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-# 2. Load processed Christchurch dataset
+# 2. Load processed Tenancy Bond dataset
 
 df = pd.read_csv(
     "data/processed/tenancy_bonds_oct2025_jun2026.csv"
@@ -33,15 +33,18 @@ print(df.dtypes)
 # Convert the dataset's missing-location sentinel to a null value.
 df["Location Id"] = df["Location Id"].replace(-99, pd.NA)
 
-#month year columns
-df["TimeFrame"] = pd.to_datetime(df["TimeFrame"])  
+# Create year and quarter variables from TimeFrame
+df["TimeFrame"] = pd.to_datetime(df["TimeFrame"])
 df["year"] = df["TimeFrame"].dt.year
-df["months"] = df["TimeFrame"].dt.month
+df["quarter"] = df["TimeFrame"].dt.month
 
-#quarterly  
-df["months"] = df["months"].replace({4: "JAN-MARCH", 7: "APR-JUNE", 10: "JULY-SEPT", 1: "OCT-DEC"})
-
-df.loc[df["months"] == "OCT-DEC", "year"] = df["year"] -1 
+# Convert the month number to the corresponding quarter
+df["quarter"] = df["quarter"].replace({
+    1: "JAN-MARCH",
+    4: "APR-JUNE",
+    7: "JULY-SEPT",
+    10: "OCT-DEC"
+})
 
 print("\nColumn names:")
 print(df.columns.tolist())
