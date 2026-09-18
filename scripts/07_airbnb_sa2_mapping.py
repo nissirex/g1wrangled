@@ -9,7 +9,7 @@ INPUT_FILE = "data/processed/christchurch_listings_cleaned.csv"
 OUTPUT_FILE = "data/processed/christchurch_listings_cleaned_with_sa2.csv"
 
 API_KEY = "4547baa841774dccb26c0234f1f4381b"
-LAYER_ID = 120978
+LAYER_ID = 98970
 
 URL = "https://koordinates.com/services/query/v1/vector.json"
 
@@ -47,8 +47,8 @@ def get_sa2(latitude, longitude):
                 properties = feature["properties"]
 
                 return (
-                    properties["SA22025_V1_00"],
-                    properties["SA22025_V1_00_NAME"]
+                    properties["SA22019_V1_00"],
+                    properties["SA22019_V1_00_NAME"]
                 )
 
     except Exception as e:
