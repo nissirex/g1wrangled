@@ -130,6 +130,7 @@ The Python scripts are organised according to the main stages of the Christchurc
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
 | `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
 | `06_clean_bond.py` | Produces statistics for missingness and summaries. Cleans the data by correcting data types, making a new column for quarterly intervals.|
+
 ## Christchurch Airbnb Data Cleaning
 
 The combined Christchurch dataset contained 28,795 rows and 20 columns before cleaning.
@@ -139,14 +140,19 @@ The combined Christchurch dataset contained 28,795 rows and 20 columns before cl
 - **Missing prices:** 10,667 `price` values (37.04%) were retained as missing because these listings may still be useful when analysing property counts. They will be excluded only from analyses requiring price.
 - **Review data:** 2,627 missing `reviews_per_month` values were set to 0 after confirming that the corresponding listings had no reviews. Missing `last_review` values were retained because listings without reviews have no valid review date.
 
-- ## Tenancy bonds Data Cleaning
+## Tenancy bonds Data Cleaning
 
 The tenancy bond dataset contained 27,212  rows and 12 columns before cleaning.
 
 - **Column removal:** No columns were removed due to a lack of knowledge over the dataset and requirements further along for.
-- **Column addition:** Added a new column for quarterly months for clarity and use later
+- **Column addition:** Added a new column for quarterly months for clarity and use later in joining
 - **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected. Number Of Beds remains as string due to "ALL" and "5+" being options. Without further domain knowledge it is hard to know what "ALL" means. 
 - **Missing values and Observation Review:** location ID had both missing values and "-99". However these rows seem to be totals (however these totals did not match with the sections). these are not removed yet due to a lack of domain knowledge. There are 94 missing values for Geometric Mean Rent, Upper Quartile Rent, Lower Quartile Rent, Log Std Dev Weekly Rent. This missingness corresponds to the missing location ID's and therefore are also not removed yet. 890 obersevations were missing Number of beds, these have not been imputed due to lack of domain knowledge as "ALL" is also in the field.
 - **Duplicates** There are no duplicates in the data.   
  
+
+## Dataset Joining
+The `08_join_datasets.py` script joins the cleaned Christchurch Airbnb listings dataset with the cleaned Tenancy Services rental bond dataset. First, the two datasets are loaded and a common quarter variable is created. The Airbnb data contains monthly observations from October 2025 to June 2026, so these months are grouped into the corresponding quarters. The Tenancy Services dataset already contains the same quarter information in the `months` column, which is copied to a new `quarter` column to make the datasets consistent. The Tenancy Services data is then filtered to observations where `Dwelling Type` and `Number Of Beds` are both `ALL`, providing an overall rental statistic for each area rather than statistics for a specific dwelling type or number of bedrooms. Rows without a `Location Id` are removed because they cannot be matched to an Airbnb SA2 area. Before joining, the script checks that there is only one Tenancy Services record for each `Location Id` and quarter, which prevents the join from duplicating Airbnb listings. The datasets are then joined using the Airbnb `sa2_code` & `quarter` and the Tenancy Services `Location Id` & `quarter`. A left join is used so that all Airbnb listings are retained, including listings for which there is no matching Tenancy Services record. Finally, the script checks that the number of Airbnb rows has not changed, reports how many listings were matched and unmatched, and saves the resulting joined dataset as `joined_airbnb_tenancy.csv` for use in the subsequent analyses.
+
+24,551 of the 28,795 Airbnb listings were matched, while 4,244 were unmatched (remain in the dataset because a left join was used). The unmatched listings came from 46 SA2 areas. Additional checks found that 26 of the 46 unmatched SA2 codes do not occur anywhere in the cleaned Tenancy Services dataset. The remaining unmatched areas do occur somewhere in the Tenancy Services data, but apparently do not have the specific ALL dwelling type + ALL beds combination used for the join. Tenancy Services also states that its data can be suppressed when there are fewer than five bonds for a particular selection, so suppression or lack of an applicable overall rental record may contribute to some missing matches. Therefore, it would be inappropriate to assume that the geographic mapping is wrong simply because a listing has no rental match.
 
