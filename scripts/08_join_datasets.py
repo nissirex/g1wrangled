@@ -57,6 +57,14 @@ duplicates = bonds_all.duplicated(
 
 print("\nDuplicate location-quarter combinations:", duplicates)
 
+# Convert SA2 codes and Location IDs to numeric for joining
+airbnb["sa2_code"] = pd.to_numeric(
+    airbnb["sa2_code"], errors="coerce"
+).astype("Int64")
+
+bonds_all["Location Id"] = pd.to_numeric(
+    bonds_all["Location Id"], errors="coerce"
+).astype("Int64")
 
 # Join the datasets using SA2 area and quarter
 # A left join keeps all Airbnb listings
