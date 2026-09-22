@@ -89,7 +89,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `Upper Quartile Rent` | Integer | The upper quartile of weekly rent, representing the 75th percentile of the rental distribution. Note: The column also allows null values. |
 | `Lower Quartile Range` | Integer | The lower quartile of weekly rent, representing the 25th percentile of the rental distribution. Note: The column also allows null values. |
 | `Log Std Dev Weekly Rent` | Decimal | The standard deviation of the logarithm of weekly rents, describing the spread of rental prices on the log scale. Note: The column also allows null values. |
-| `Months` | Quartly months |
+
 
 
 ### Data Limitations
@@ -130,6 +130,9 @@ The Python scripts are organised according to the main stages of the Christchurc
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
 | `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
 | `06_clean_bond.py` | Produces statistics for missingness and summaries. Cleans the data by correcting data types, making a new column for quarterly intervals.|
+| `07_airbnb_sa2_mapping.py` | Takes the cleaned Airbnb dataset and matches the coordinates to SA2 labels for each listing.|
+| `08_join_datasets.py` | Merges the cleaned Airbnb dataset with the cleaned tenancy bond dataset by SA2 location and quarter so that each Airbnb listing is matched to the corresponding rental-market data for that area and time period.|
+| `09_comparing_joined_dataset.py` | Produces statistics for median Airbnbprice in christchurch central, price difference between short and long-term rentals, and comparing how many Airbnb and rental properties there are in each location.|
 
 ## Christchurch Airbnb Data Cleaning
 
