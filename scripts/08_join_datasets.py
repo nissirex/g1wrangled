@@ -16,8 +16,17 @@ airbnb["quarter"] = airbnb["year_month"].apply(
 )
 
 
-# Create the same quarter variable for the Tenancy Services data
-bonds["quarter"] = bonds["months"]
+# Tenancy Services
+
+# Create the quarter variable from the TimeFrame
+bonds["TimeFrame"] = pd.to_datetime(bonds["TimeFrame"])
+
+bonds["quarter"] = bonds["TimeFrame"].dt.month.map({
+    1: "JAN-MARCH",
+    4: "APR-JUNE",
+    7: "JULY-SEPT",
+    10: "OCT-DEC"
+})
 
 
 # Check the quarters in both datasets
