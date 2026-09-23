@@ -56,9 +56,6 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `number_of_reviews_ltm` | Integer | The number of reviews received by the listing during the last 12 months. |
 | `license` | Text | The licence, permit or registration number associated with the listing, where one is provided. This field may contain missing values. |
 
-
-
-
 This project also uses the `Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv` summary dataset provided by [Tenancy Services](https://www.tenancy.govt.nz/about-tenancy-services/data-and-statistics/rental-bond-data/).
 
 - **Dataset:** Rental bond data
@@ -89,7 +86,7 @@ The original dataset is stored locally by each team member and is not uploaded t
 | `Upper Quartile Rent` | Integer | The upper quartile of weekly rent, representing the 75th percentile of the rental distribution. Note: The column also allows null values. |
 | `Lower Quartile Range` | Integer | The lower quartile of weekly rent, representing the 25th percentile of the rental distribution. Note: The column also allows null values. |
 | `Log Std Dev Weekly Rent` | Decimal | The standard deviation of the logarithm of weekly rents, describing the spread of rental prices on the log scale. Note: The column also allows null values. |
-| `Months` | Quartly months |
+
 
 
 ### Data Limitations
@@ -130,6 +127,10 @@ The Python scripts are organised according to the main stages of the Christchurc
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
 | `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
 | `06_clean_bond.py` | Produces statistics for missingness and summaries. Cleans the data by correcting data types, making a new column for quarterly intervals.|
+| `07_airbnb_sa2_mapping.py` | Takes the cleaned Airbnb dataset and matches the coordinates to SA2 labels for each listing.|
+| `08_join_datasets.py` | Merges the cleaned Airbnb dataset with the cleaned tenancy bond dataset by SA2 location and quarter so that each Airbnb listing is matched to the corresponding rental-market data for that area and time period.|
+| `09_comparing_joined_dataset.py` | Produces statistics for median Airbnbprice in christchurch central, price difference between short and long-term rentals, and comparing how many Airbnb and rental properties there are in each location.|
+| `10_sqlite_join.py` | Stores both prepared datasets in SQLite, joins them using SQL by SA2 location and year-quarter, and exports the joined dataset. |
 
 ## Christchurch Airbnb Data Cleaning
 
@@ -148,7 +149,15 @@ The tenancy bond dataset contained 27,212  rows and 12 columns before cleaning.
 - **Column addition:** Added a new column for quarterly months for clarity and use later in joining
 - **Data types:** Numeric, date and categorical columns were converted to appropriate data types to support subsequent analysis. No rows were affected. Number Of Beds remains as string due to "ALL" and "5+" being options. Without further domain knowledge it is hard to know what "ALL" means. 
 - **Missing values and Observation Review:** location ID had both missing values and "-99". However these rows seem to be totals (however these totals did not match with the sections). these are not removed yet due to a lack of domain knowledge. There are 94 missing values for Geometric Mean Rent, Upper Quartile Rent, Lower Quartile Rent, Log Std Dev Weekly Rent. This missingness corresponds to the missing location ID's and therefore are also not removed yet. 890 obersevations were missing Number of beds, these have not been imputed due to lack of domain knowledge as "ALL" is also in the field.
-- **Duplicates** There are no duplicates in the data.   
+- **Duplicates** There are no duplicates in the data.
+
+## SA2 Mapping
+
+A Koordinates account and API key were created to query the [Stats NZ SA2-2019 layer](https://datafinder.stats.govt.nz/layer/98970-statistical-area-2-2019-generalised/) (ID `98970`). The `07_airbnb_sa2_mapping.py` script queries unique Airbnb coordinates using eight concurrent workers and appends `sa2_code` and `sa2_name` to the cleaned Christchurch dataset. The result is saved as `christchurch_listings_cleaned_with_sa2.csv` to avoid repeating queries.
+
+## SQLite Join
+
+The `10_sqlite_join.py` script stores both prepared datasets in `christchurch_rentals.sqlite`. It creates `year_quarter` from Airbnb `year_month` and tenancy `TimeFrame`, then uses SQL to left join on location and year-quarter, selecting tenancy rows with `ALL` dwelling types and bedrooms. The join retains 28,795 observations: 24,551 matched and 4,244 unmatched. Results are exported to `joined_airbnb_tenancy_sql.csv`.
  
 
 ## Dataset Joining
