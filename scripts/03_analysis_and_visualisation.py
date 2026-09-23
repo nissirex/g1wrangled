@@ -63,7 +63,7 @@ threshold = 1050
 clipped_data = np.clip(price, a_min=None, a_max=threshold)
 
 #missing values
-missingValues = price.isna().sum()  # number of missing values 
+missingValues = price.isna().sum() 
 print(f"Missing values in 'price' column: {missingValues}")
 
 

@@ -97,8 +97,8 @@ print("Airbnb listings without matching tenancy data:", unmatched)
 
 
 # Save the joined dataset
-joined.to_csv("data/processed/joined_airbnb_tenancy.csv",
-    index=False)
+output_path = "data/processed/joined_airbnb_tenancy.csv"
+joined.to_csv(output_path, index=False)
 
 print("\nJoined dataset saved to:")
-print("data/processed/joined_airbnb_tenancy.csv")
+print(output_path)
