@@ -55,24 +55,39 @@ print(
     f"Median difference: ${largest_gap['price_difference']:,.2f} per night"
 )
 
-
-# Plot distribution of price differences
-plt.figure(figsize=(14, 7))
-
-joined.boxplot(
-    column="price_difference",
-    by="sa2_name",
-    rot=90
+# Keep observations with a price difference and ward name
+plot_data = joined.dropna(
+    subset=["price_difference", "neighbourhood"]
 )
 
-plt.title("Difference Between Short-Term and Long-Term Rental Prices")
-plt.suptitle("")
-plt.xlabel("Location")
-plt.ylabel("Price difference per night ($)")
-plt.tight_layout()
+# Summarise price differences by ward
+ward_summary = (
+    plot_data.groupby("neighbourhood")
+    .agg(
+        median_gap=("price_difference", "median"),
+        unique_airbnbs=("id", "nunique")
+    )
+    .sort_values("median_gap", ascending=False)
+)
 
-plt.savefig("price_difference_by_location.png", dpi=300)
+print(ward_summary)
 
+fig, ax = plt.subplots(figsize=(12, 8))
+
+plot_data.boxplot(
+    column="price_difference",
+    by="neighbourhood",
+    vert=False,
+    showfliers=False,
+    ax=ax, grid=False
+)
+
+ax.set_title("Nightly price differences by Christchurch ward")
+fig.suptitle("")
+ax.set_xlabel("Airbnb price − weekly tenancy rent ÷ 7 (NZ$)")
+ax.set_ylabel("Ward")
+
+fig.tight_layout()
 plt.show()
 
 
