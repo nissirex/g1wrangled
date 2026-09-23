@@ -113,7 +113,7 @@ rental_data = (
 
 rental_counts = (
     rental_data
-    .groupby("sa2_code")["Total Bonds"]
+    .groupby("sa2_code")["Active Bonds"]
     .mean()
     .reset_index(name="average_rental_properties")
 )
