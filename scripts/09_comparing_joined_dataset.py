@@ -9,15 +9,15 @@ joined = pd.read_csv(
 
 
 # Median Airbnb price in Christchurch Central
-central = joined[
+Christchurch_Central = joined[
     pd.to_numeric(joined["sa2_code"], errors="coerce") == 326600
 ]
 
-median_price = central["price"].median()
+median_price_chch_central = Christchurch_Central["price"].median()
 
 print(
     f"Median Airbnb price for Christchurch Central "
-    f"(SA2 code 326600): ${median_price:,.2f}"
+    f"(SA2 code 326600): ${median_price_chch_central:,.2f}"
 )
 
 
@@ -113,7 +113,7 @@ rental_data = (
 
 rental_counts = (
     rental_data
-    .groupby("sa2_code")["Total Bonds"]
+    .groupby("sa2_code")["Active Bonds"]
     .mean()
     .reset_index(name="average_rental_properties")
 )

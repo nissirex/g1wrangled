@@ -20,7 +20,6 @@ df = pd.read_csv(
     dtype={"host_id": "string"}
 )
 
-print("Dataset loaded successfully.")
 
 # Store original dimensions
 original_rows = len(df)

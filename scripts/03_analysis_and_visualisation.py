@@ -57,6 +57,8 @@ clipped_data = np.clip(price, a_min=None, a_max=threshold)
 
 # Missing values
 missingValues = price.isna().sum()  # number of missing values 
+#missing values
+missingValues = price.isna().sum() 
 print(f"Missing values in 'price' column: {missingValues}")
 
 # Plotting histogram
