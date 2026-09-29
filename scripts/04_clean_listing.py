@@ -1,14 +1,23 @@
-# 1. Imports
+# Clean the combined Christchurch listings: correct types, tidy text,
+# remove unused columns and duplicate rows, and fill missing review rates
+# only for listings with no reviews. Keep missing prices and minimum nights.
+# Input: data/processed/christchurch_listings_oct2025_jun2026.csv.
+# Output: data/processed/christchurch_listings_cleaned.csv and printed checks.
+# Run from the project root. Raw data are not modified.
+
+# Imports
 
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
+output_path = Path("data/processed/christchurch_listings_cleaned.csv")
 
-# 2. Load processed Christchurch dataset
+# Load processed Christchurch dataset
 
 df = pd.read_csv(
-    "data/processed/christchurch_listings_oct2025_jun2026.csv"
+    "data/processed/christchurch_listings_oct2025_jun2026.csv",
+    dtype={"host_id": "string"}
 )
 
 print("Dataset loaded successfully.")
@@ -17,8 +26,7 @@ print("Dataset loaded successfully.")
 original_rows = len(df)
 original_columns = len(df.columns)
 
-
-# 3. Inspect dataset before cleaning
+# Inspect dataset before cleaning
 
 # Shape
 print("\nDataset shape:")
@@ -55,7 +63,7 @@ print(df.describe().T)
 print("\nText summary statistics:")
 print(df.describe(include=["object"]).T)
 
-# 4. Remove unnecessary columns
+# Remove unnecessary columns
 
 columns_to_drop = [
     "name",
@@ -72,7 +80,7 @@ print(columns_to_drop)
 print("\nDataset shape after removing columns:")
 print(df.shape)
 
-# 5. Correct data types
+# Correct data types
 
 # Numeric columns
 numeric_columns = [
@@ -91,19 +99,37 @@ for column in numeric_columns:
     if column in df.columns:
         df[column] = pd.to_numeric(df[column], errors="coerce")
 
-# Date columns
-date_columns = [
-    "last_review",
-    "Date"
-]
+# Nullable integers preserve missing values without rounding fractional values.
+integer_columns = ["minimum_nights", "calculated_host_listings_count"]
 
-for column in date_columns:
+for column in integer_columns:
     if column in df.columns:
-        df[column] = pd.to_datetime(
-            df[column],
+        df[column] = df[column].astype("Int64")
+
+# Date columns: snapshot/review dates are daily; year_month represents a month.
+date_formats = {
+    "last_review": "%Y-%m-%d",
+    "Date": "%Y-%m-%d",
+    "year_month": "%Y-%m",
+}
+
+for column, date_format in date_formats.items():
+    if column in df.columns:
+        original_dates = df[column]
+        converted_dates = pd.to_datetime(
+            original_dates,
+            format=date_format,
             errors="coerce"
         )
-# Categorical columns
+        invalid_dates = (original_dates.notna() & converted_dates.isna()).sum()
+        print(f"Invalid {column} values converted to missing: {invalid_dates}")
+        df[column] = converted_dates
+
+# Keep monthly precision and YYYY-MM values in the saved CSV.
+if "year_month" in df.columns:
+    df["year_month"] = df["year_month"].dt.to_period("M")
+
+# Categorical columns (converted to strings during text cleaning below)
 categorical_columns = [
     "neighbourhood",
     "room_type"
@@ -116,7 +142,7 @@ for column in categorical_columns:
 print("\nData types after correction:")
 print(df.dtypes)
 
-# 6. Handle missing values
+# Handle missing values
 
 # Set reviews_per_month to 0 for listings with no reviews
 if "reviews_per_month" in df.columns and "number_of_reviews" in df.columns:
@@ -144,7 +170,7 @@ print(
     ].sort_values(ascending=False)
 )
 
-# 7. Clean text values
+# Clean text values
 
 text_columns = df.select_dtypes(
     include=["object", "string", "category"]
@@ -157,7 +183,7 @@ for column in text_columns:
 
 df = df.replace(r"^\s*$", np.nan, regex=True)
 
-# 8. Remove exact duplicates
+# Remove exact duplicates across the retained, standardised columns
 
 rows_before_duplicates = len(df)
 
@@ -168,78 +194,9 @@ duplicates_removed = rows_before_duplicates - len(df)
 print("\nExact duplicate rows removed:")
 print(duplicates_removed)
 
-# 9. Handle extreme prices
+# Missing minimum_nights and price values are left missing.
 
-# Treat prices >= $5000 as missing so they can be imputed
-
-extreme_price_count = (df["price"] >= 5000).sum()
-
-df.loc[df["price"] >= 5000, "price"] = np.nan
-
-print("\nPrices >= $5000 set to missing:")
-print(extreme_price_count)
-
-# 10. Minimum nights imputation
-
-# First: median for the same month and room type
-# Second: median for the same room type
-# Third: overall median
-
-minimum_nights_missing = df["minimum_nights"].isna().sum()
-
-df["minimum_nights"] = (
-    df.groupby(
-        ["year_month", "room_type"],
-        observed=True
-    )["minimum_nights"]
-    .transform(lambda x: x.fillna(x.median()))
-    .fillna(
-        df.groupby(
-            "room_type",
-            observed=True
-        )["minimum_nights"].transform("median")
-    )
-    .fillna(df["minimum_nights"].median())
-)
-
-# Convert minimum_nights back to integer after imputation
-
-df["minimum_nights"] = (
-    df["minimum_nights"]
-    .round()
-    .astype("Int64")
-)
-
-print("\nMissing minimum_nights values imputed:")
-print(minimum_nights_missing)
-
-# 11. Price imputation
-
-# First: median for neighbourhood + room type + minimum nights
-# Second: median for room type
-# Third: overall median
-
-price_missing = df["price"].isna().sum()
-
-df["price"] = (
-    df.groupby(
-        ["neighbourhood", "room_type", "minimum_nights"],
-        observed=True
-    )["price"]
-    .transform(lambda x: x.fillna(x.median()))
-    .fillna(
-        df.groupby(
-            "room_type",
-            observed=True
-        )["price"].transform("median")
-    )
-    .fillna(df["price"].median())
-)
-
-print("\nMissing/extreme price values imputed:")
-print(price_missing)
-
-# 12. Check cleaned dataset
+# Check cleaned dataset
 
 print("\nFinal missing values:")
 
@@ -266,11 +223,7 @@ print(original_columns - len(df.columns))
 print("\nFinal data types:")
 print(df.dtypes)
 
-# 13. Save cleaned dataset
-
-output_path = Path(
-    "data/processed/christchurch_listings_cleaned.csv"
-)
+# Save cleaned dataset
 
 output_path.parent.mkdir(
     parents=True,
