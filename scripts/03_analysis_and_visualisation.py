@@ -11,39 +11,39 @@ input_path = "data/processed/christchurch_listings_oct2025_jun2026.csv"
 threshold = 1050
 top_proportion = 0.10
 
-df = pd.read_csv(input_path)
+christchurch_data = pd.read_csv(input_path)
 
 # How long ago the last review was for each listing in the Christchurch dataset.
 
 # Convert the date columns into dates
-df["Date"] = pd.to_datetime(
-df["Date"],
+christchurch_data["Date"] = pd.to_datetime(
+christchurch_data["Date"],
 format="%Y-%m-%d"
 )
 
-df["last_review"] = pd.to_datetime(
-df["last_review"]
+christchurch_data["last_review"] = pd.to_datetime(
+christchurch_data["last_review"]
 )
 
 # Calculate the number of days since the last review
-df["days_since_last_review"] = (
-df["Date"] -
-df["last_review"]
+christchurch_data["days_since_last_review"] = (
+christchurch_data["Date"] -
+christchurch_data["last_review"]
 ).dt.days
 
 # Print summary statistics for the new variable
 print("Summary statistics for days since last review:")
-print(df["days_since_last_review"].describe())
+print(christchurch_data["days_since_last_review"].describe())
 
 # Print days since the last review
 print("\nDays since last review for each listing:")
-print(df["days_since_last_review"])
+print(christchurch_data["days_since_last_review"])
 
 # Plot the distribution
 print("\nPlotting the distribution of days since last review...")
 plt.figure(figsize=(8,5))
 plt.hist(
-df["days_since_last_review"].dropna(),
+christchurch_data["days_since_last_review"].dropna(),
 bins=30
 )
 plt.xlabel("Days since last review")
@@ -52,7 +52,7 @@ plt.title("Distribution of Days Since Last Review")
 plt.show()
 
 # Price distribution across monthly listing observations
-price = df[['price']].copy()
+price = christchurch_data[['price']].copy()
 clipped_data = np.clip(price, a_min=None, a_max=threshold)
 
 # Missing values
@@ -70,16 +70,16 @@ plt.show()
 
 # Top 10% of Christchurch properties by number of reviews
 
-df["year_month"] = pd.to_datetime(
-    df["year_month"],
+christchurch_data["year_month"] = pd.to_datetime(
+    christchurch_data["year_month"],
     format="%Y-%m"
 )
 
 # Sort each property chronologically
-df = df.sort_values("year_month")
+christchurch_data = christchurch_data.sort_values("year_month")
 
 # Keep the latest record available for each property
-latest_listings = df.drop_duplicates(
+latest_listings = christchurch_data.drop_duplicates(
     subset="id",
     keep="last"
 )

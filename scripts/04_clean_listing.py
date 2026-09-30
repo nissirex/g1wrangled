@@ -15,33 +15,33 @@ output_path = Path("data/processed/christchurch_listings_cleaned.csv")
 
 # Load processed Christchurch dataset
 
-df = pd.read_csv(
+christchurch_data = pd.read_csv(
     "data/processed/christchurch_listings_oct2025_jun2026.csv",
     dtype={"host_id": "string"}
 )
 
 
 # Store original dimensions
-original_rows = len(df)
-original_columns = len(df.columns)
+original_rows = len(christchurch_data)
+original_columns = len(christchurch_data.columns)
 
 # Inspect dataset before cleaning
 
 # Shape
 print("\nDataset shape:")
-print(df.shape)
+print(christchurch_data.shape)
 
 # Column names
 print("\nColumn names:")
-print(df.columns.tolist())
+print(christchurch_data.columns.tolist())
 
 # Data types
 print("\nData types:")
-print(df.dtypes)
+print(christchurch_data.dtypes)
 
 # Missing values
-missing_count = df.isna().sum()
-missing_percent = (missing_count / len(df) * 100).round(2)
+missing_count = christchurch_data.isna().sum()
+missing_percent = (missing_count / len(christchurch_data) * 100).round(2)
 
 missing_summary = pd.DataFrame({
     "missing_count": missing_count,
@@ -57,10 +57,10 @@ print(missing_summary)
 
 # Summary statistics
 print("\nNumeric summary statistics:")
-print(df.describe().T)
+print(christchurch_data.describe().T)
 
 print("\nText summary statistics:")
-print(df.describe(include=["object"]).T)
+print(christchurch_data.describe(include=["object"]).T)
 
 # Remove unnecessary columns
 
@@ -71,13 +71,13 @@ columns_to_drop = [
     "neighbourhood_group"
 ]
 
-df = df.drop(columns=columns_to_drop)
+christchurch_data = christchurch_data.drop(columns=columns_to_drop)
 
 print("\nColumns removed:")
 print(columns_to_drop)
 
 print("\nDataset shape after removing columns:")
-print(df.shape)
+print(christchurch_data.shape)
 
 # Correct data types
 
@@ -95,15 +95,15 @@ numeric_columns = [
 ]
 
 for column in numeric_columns:
-    if column in df.columns:
-        df[column] = pd.to_numeric(df[column], errors="coerce")
+    if column in christchurch_data.columns:
+        christchurch_data[column] = pd.to_numeric(christchurch_data[column], errors="coerce")
 
 # Nullable integers preserve missing values without rounding fractional values.
 integer_columns = ["minimum_nights", "calculated_host_listings_count"]
 
 for column in integer_columns:
-    if column in df.columns:
-        df[column] = df[column].astype("Int64")
+    if column in christchurch_data.columns:
+        christchurch_data[column] = christchurch_data[column].astype("Int64")
 
 # Date columns: snapshot/review dates are daily; year_month represents a month.
 date_formats = {
@@ -113,8 +113,8 @@ date_formats = {
 }
 
 for column, date_format in date_formats.items():
-    if column in df.columns:
-        original_dates = df[column]
+    if column in christchurch_data.columns:
+        original_dates = christchurch_data[column]
         converted_dates = pd.to_datetime(
             original_dates,
             format=date_format,
@@ -122,11 +122,11 @@ for column, date_format in date_formats.items():
         )
         invalid_dates = (original_dates.notna() & converted_dates.isna()).sum()
         print(f"Invalid {column} values converted to missing: {invalid_dates}")
-        df[column] = converted_dates
+        christchurch_data[column] = converted_dates
 
 # Keep monthly precision and YYYY-MM values in the saved CSV.
-if "year_month" in df.columns:
-    df["year_month"] = df["year_month"].dt.to_period("M")
+if "year_month" in christchurch_data.columns:
+    christchurch_data["year_month"] = christchurch_data["year_month"].dt.to_period("M")
 
 # Categorical columns (converted to strings during text cleaning below)
 categorical_columns = [
@@ -135,24 +135,24 @@ categorical_columns = [
 ]
 
 for column in categorical_columns:
-    if column in df.columns:
-        df[column] = df[column].astype("category")
+    if column in christchurch_data.columns:
+        christchurch_data[column] = christchurch_data[column].astype("category")
 
 print("\nData types after correction:")
-print(df.dtypes)
+print(christchurch_data.dtypes)
 
 # Handle missing values
 
 # Set reviews_per_month to 0 for listings with no reviews
-if "reviews_per_month" in df.columns and "number_of_reviews" in df.columns:
+if "reviews_per_month" in christchurch_data.columns and "number_of_reviews" in christchurch_data.columns:
 
     no_reviews = (
-        df["reviews_per_month"].isna()
-        & (df["number_of_reviews"] == 0)
+        christchurch_data["reviews_per_month"].isna()
+        & (christchurch_data["number_of_reviews"] == 0)
     )
 
     reviews_filled = no_reviews.sum()
-    df.loc[no_reviews, "reviews_per_month"] = 0
+    christchurch_data.loc[no_reviews, "reviews_per_month"] = 0
 
     print(
         "reviews_per_month values changed to 0:",
@@ -162,7 +162,7 @@ if "reviews_per_month" in df.columns and "number_of_reviews" in df.columns:
 # Keep last_review missing for listings that have never been reviewed
 
 print("\nRemaining missing values:")
-remaining_missing = df.isna().sum()
+remaining_missing = christchurch_data.isna().sum()
 print(
     remaining_missing[
         remaining_missing > 0
@@ -171,24 +171,24 @@ print(
 
 # Clean text values
 
-text_columns = df.select_dtypes(
+text_columns = christchurch_data.select_dtypes(
     include=["object", "string", "category"]
 ).columns
 
 for column in text_columns:
-    df[column] = df[column].astype("string").str.strip()
+    christchurch_data[column] = christchurch_data[column].astype("string").str.strip()
 
 # Replace blank or whitespace-only values with NaN
 
-df = df.replace(r"^\s*$", np.nan, regex=True)
+christchurch_data = christchurch_data.replace(r"^\s*$", np.nan, regex=True)
 
 # Remove exact duplicates across the retained, standardised columns
 
-rows_before_duplicates = len(df)
+rows_before_duplicates = len(christchurch_data)
 
-df = df.drop_duplicates()
+christchurch_data = christchurch_data.drop_duplicates()
 
-duplicates_removed = rows_before_duplicates - len(df)
+duplicates_removed = rows_before_duplicates - len(christchurch_data)
 
 print("\nExact duplicate rows removed:")
 print(duplicates_removed)
@@ -199,7 +199,7 @@ print(duplicates_removed)
 
 print("\nFinal missing values:")
 
-final_missing = df.isna().sum()
+final_missing = christchurch_data.isna().sum()
 
 print(
     final_missing[
@@ -208,19 +208,19 @@ print(
 )
 
 print("\nDuplicate rows remaining:")
-print(df.duplicated().sum())
+print(christchurch_data.duplicated().sum())
 
 print("\nFinal dataset shape:")
-print(df.shape)
+print(christchurch_data.shape)
 
 print("\nRows removed during cleaning:")
-print(original_rows - len(df))
+print(original_rows - len(christchurch_data))
 
 print("\nColumns removed during cleaning:")
-print(original_columns - len(df.columns))
+print(original_columns - len(christchurch_data.columns))
 
 print("\nFinal data types:")
-print(df.dtypes)
+print(christchurch_data.dtypes)
 
 # Save cleaned dataset
 
@@ -229,7 +229,7 @@ output_path.parent.mkdir(
     exist_ok=True
 )
 
-df.to_csv(
+christchurch_data.to_csv(
     output_path,
     index=False
 )
