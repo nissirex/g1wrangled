@@ -165,3 +165,18 @@ The `08_join_datasets.py` script joins the cleaned Christchurch Airbnb listings 
 
 24,551 of the 28,795 Airbnb listings were matched, while 4,244 were unmatched (remain in the dataset because a left join was used). The unmatched listings came from 46 SA2 areas. Additional checks found that 26 of the 46 unmatched SA2 codes do not occur anywhere in the cleaned Tenancy Services dataset. The remaining unmatched areas do occur somewhere in the Tenancy Services data, but apparently do not have the specific ALL dwelling type + ALL beds combination used for the join. Tenancy Services also states that its data can be suppressed when there are fewer than five bonds for a particular selection, so suppression or lack of an applicable overall rental record may contribute to some missing matches. Therefore, it would be inappropriate to assume that the geographic mapping is wrong simply because a listing has no rental match.
 
+## Code Cleanup and Sanity Checks
+
+- **01 — Data preparation:** Added a short description, improved formatting and removed an unused import. Retained the original filtering and combination steps.
+- **02 — Descriptive statistics:** Clarified the input path and comments, improved formatting and made date conversion explicit. Checked date summaries using sample data.
+- **03 — Analysis and visualisation:** Removed an unused import, clarified plot labels and moved settings to the top. Documented price capping for display and the top-10% selection rule.
+- **04 — Listing cleaning:** Removed price and minimum-night imputation and extreme-price filtering. Corrected date and identifier types and used nullable integers for minimum nights and host listing counts. Sample-data checks confirmed missing values were preserved and dates were converted correctly.
+- **05 — Bond timeframe filtering:** Removed redundant comments and print statements and clarified file paths and variable names.
+- **06 — Bond cleaning:** Improved naming and formatting and removed unnecessary imputation code. Reviewed missing values, data types and duplicate counts.
+- **07 — SA2 mapping:** Renamed the API URL variable for clarity and added checks for latitude and longitude columns. Reported matched and unmatched listings.
+- **08 — pandas join:** Organised the workflow into functions and calculated year-quarter values from dates. Added required-column, quarter and duplicate-key checks, plus many-to-one merge validation. Checked row counts and investigated unmatched SA2 areas.
+- **09 — Rental comparisons:** Removed unnecessary comments and print statements and used clearer names for datasets and calculated results.
+- **10 — SQLite join:** Added named file paths and a main function. Checked row counts before and after joining and reported matched and unmatched observations.
+
+Syntax checks were completed for the revised scripts 01–04. Sample-data checks were used where noted; these do not replace a full pipeline run.
+
