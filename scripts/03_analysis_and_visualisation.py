@@ -1,15 +1,17 @@
-import pandas as pd
+# Explore review recency, prices and the most-reviewed Christchurch listings.
+# Input: Combined listing CSV produced by script 01, before cleaning.
+# Output: Printed summaries and two displayed histograms.
+# Run from the project root.
+
 import matplotlib.pyplot as plt
-from pathlib import Path
 import numpy as np
+import pandas as pd
 
+input_path = "data/processed/christchurch_listings_oct2025_jun2026.csv"
+threshold = 1050
+top_proportion = 0.10
 
-
-# Load the Christchurch dataset
-df = pd.read_csv(
-"data/processed/christchurch_listings_oct2025_jun2026.csv"
-)
-
+df = pd.read_csv(input_path)
 
 # How long ago the last review was for each listing in the Christchurch dataset.
 
@@ -40,35 +42,26 @@ print(df["days_since_last_review"])
 # Plot the distribution
 print("\nPlotting the distribution of days since last review...")
 plt.figure(figsize=(8,5))
-
 plt.hist(
 df["days_since_last_review"].dropna(),
 bins=30
 )
-
 plt.xlabel("Days since last review")
 plt.ylabel("Number of listings")
 plt.title("Distribution of Days Since Last Review")
-
 plt.show()
 
-
-
+# Price distribution across monthly listing observations
 price = df[['price']].copy()
-
-# threshold for histogram
-threshold = 1050
-
-#1000+ prices all in this histogram col
 clipped_data = np.clip(price, a_min=None, a_max=threshold)
 
+# Missing values
+missingValues = price.isna().sum()  # number of missing values 
 #missing values
 missingValues = price.isna().sum() 
 print(f"Missing values in 'price' column: {missingValues}")
 
-
-
-#plotting histogram
+# Plotting histogram
 plt.hist(clipped_data, bins=21, range=(0,threshold), edgecolor='black')
 plt.title('Price Distribution')
 plt.xlabel('Price')

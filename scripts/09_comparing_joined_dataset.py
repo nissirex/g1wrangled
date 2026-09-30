@@ -1,16 +1,24 @@
+#Loads the joined Airbnb and tenancy bond dataset.
+#Calculates the median Airbnb price for Christchurch Central.
+#Compares nightly Airbnb prices with weekly tenancy rents converted to nightly rates.
+#Calculates median price differences by SA2 location and identifies the largest gap.
+#Summarises and plots price differences across Christchurch wards.
+#Counts Airbnb listings and estimates average long-term rental properties by location.
+#Combines these counts to compare short-term and long-term rentals.
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
 # Load joined data
-joined = pd.read_csv(
+joined_data = pd.read_csv(
     "data/processed/joined_airbnb_tenancy.csv"
 )
 
 
 # Median Airbnb price in Christchurch Central
-Christchurch_Central = joined[
-    pd.to_numeric(joined["sa2_code"], errors="coerce") == 326600
+Christchurch_Central = joined_data[
+    pd.to_numeric(joined_data["sa2_code"], errors="coerce") == 326600
 ]
 
 median_price_chch_central = Christchurch_Central["price"].median()
@@ -22,19 +30,19 @@ print(
 
 
 # Price gap between short- and long-term rentals
-joined["long_term_price_per_night"] = (
-    joined["Median Rent"] / 7
+joined_data["long_term_price_per_night"] = (
+    joined_data["Median Rent"] / 7
 )
 
-joined["price_difference"] = (
-    joined["price"]
-    - joined["long_term_price_per_night"]
+joined_data["price_difference"] = (
+    joined_data["price"]
+    - joined_data["long_term_price_per_night"]
 )
 
 
 # Median price gap for each location
 price_gap = (
-    joined
+    joined_data
     .dropna(subset=["price_difference"])
     .groupby(["sa2_code", "sa2_name"])["price_difference"]
     .median()
@@ -56,7 +64,7 @@ print(
 )
 
 # Keep observations with a price difference and ward name
-plot_data = joined.dropna(
+plot_data = joined_data.dropna(
     subset=["price_difference", "neighbourhood"]
 )
 
@@ -93,7 +101,7 @@ plt.show()
 
 # Number of Airbnbs in each location
 airbnb_counts = (
-    joined
+    joined_data
     .groupby(["sa2_code", "sa2_name"])["id"]
     .nunique()
     .reset_index(name="airbnb_count")
@@ -106,7 +114,7 @@ print(airbnb_counts.to_string(index=False))
 
 # Number of long-term rentals in each location
 rental_data = (
-    joined
+    joined_data
     .dropna(subset=["Location Id"])
     .drop_duplicates(subset=["Location Id", "quarter"])
 )

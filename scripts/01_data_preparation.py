@@ -1,6 +1,10 @@
+#Combine October 2025–June 2026 Airbnb snapshots for Christchurch City.
+#Inputs: monthly listing CSV files in data/raw/ (see SNAPSHOTS).
+#Output: data/processed/christchurch_listings_oct2025_jun2026.csv.
+#Each row represents a listing observed in one monthly snapshot.
+
 
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Code used to filter and concatenate data
 
@@ -22,11 +26,7 @@ datasets = []
 
 # Load and prepare each dataset
 for file, date in files:
-
-# Load the CSV file
     df = pd.read_csv(file)
-
-# Convert the date into a date
     date = pd.to_datetime(date, format="%d/%m/%Y")
 
 # Add the date to every row
@@ -37,20 +37,18 @@ for file, date in files:
 
 # Keep only Christchurch City
     df = df[df["neighbourhood_group"] == "Christchurch City"]
-
-# Add the filtered dataset to our list
     datasets.append(df)
 
-# 4. Combine all nine Christchurch datasets
+# Combine all nine Christchurch datasets
 christchurch_data = pd.concat(datasets, ignore_index=True)
 
-# 5. Save the combined dataset
+# Save the combined dataset
 christchurch_data.to_csv(
 "data/processed/christchurch_listings_oct2025_jun2026.csv",
 index=False
 )
 
-# 6. Print some basic information
+# Inspect the combined dataset
 print("Combined Christchurch dataset:")
 print(christchurch_data)
 
