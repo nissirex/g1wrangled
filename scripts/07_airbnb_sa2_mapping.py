@@ -8,7 +8,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 INPUT_FILE = "data/processed/christchurch_listings_cleaned.csv"
 OUTPUT_FILE = "data/processed/christchurch_listings_cleaned_with_sa2.csv"
 
-API_KEY = "4547baa841774dccb26c0234f1f4381b"
+with open("api_key.txt", "r") as file:
+    api_key = file.read().strip()
+    
 LAYER_ID = 98970
 
 KOORDINATES_URL = "https://koordinates.com/services/query/v1/vector.json"
@@ -20,7 +22,7 @@ def get_sa2(latitude, longitude):
     """Return the SA2 code and name for a given latitude and longitude."""
 
     params = {
-        "key": API_KEY,
+        "key": api_key,
         "layer": LAYER_ID,
         "x": longitude,
         "y": latitude,
