@@ -7,7 +7,7 @@ import pandas as pd
 
 input_path = "data/processed/christchurch_listings_oct2025_jun2026.csv"
 
-df = pd.read_csv(input_path)
+christchurch_data = pd.read_csv(input_path)
 
 # Summaries describe listing observations across monthly snapshots.
 # A listing can appear in more than one month.
@@ -24,7 +24,7 @@ numeric_columns = [
     "availability_365",
     "number_of_reviews_ltm"
 ]
-numeric_summary = df[numeric_columns].describe().loc[["mean", "std", "min", "max"]]
+numeric_summary = christchurch_data[numeric_columns].describe().loc[["mean", "std", "min", "max"]]
 print("Summary statistics for numerical columns:")
 print(numeric_summary)
 
@@ -38,24 +38,24 @@ categorical_columns = [
     "room_type",
     "license"
 ]
-categorical_summary = df[categorical_columns].astype("string").describe().loc[["count", "unique", "top", "freq"]] #top returns the most common value
+categorical_summary = christchurch_data[categorical_columns].astype("string").describe().loc[["count", "unique", "top", "freq"]] #top returns the most common value
 print("\nSummary statistics for categorical columns:")
 print(categorical_summary)
 
 
 # Identifier columns: distinguish observations from unique listings or hosts.
 identifier_columns = ["id","host_id"]
-identifier_summary = df[identifier_columns].agg(["count", "nunique"]) #nunique counts the number of unique values
+identifier_summary = christchurch_data[identifier_columns].agg(["count", "nunique"]) #nunique counts the number of unique values
 print("\nSummary statistics for identifier columns:")
 print(identifier_summary)
 
 # Parse dates for chronological summaries without changing the source columns.
 date_columns = ["last_review","year_month"]
-date_summary = df[date_columns].astype("datetime64[ns]").describe().loc[["count", "min", "max"]]
+date_summary = christchurch_data[date_columns].astype("datetime64[ns]").describe().loc[["count", "min", "max"]]
 print("\nSummary statistics for date columns:")
 print(date_summary)
 
 # Number of missing values per column
-missing_values = df.isnull().sum()
+missing_values = christchurch_data.isnull().sum()
 print("\nNumber of missing values per column:")
 print(missing_values)
