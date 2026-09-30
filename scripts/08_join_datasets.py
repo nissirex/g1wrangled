@@ -1,104 +1,115 @@
 import pandas as pd
 
 
-# Load the datasets
-airbnb = pd.read_csv("data/processed/christchurch_listings_cleaned_with_sa2.csv")
-
-bonds = pd.read_csv("data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv")
-
-
-# Create a quarter variable for the Airbnb data
-airbnb["quarter"] = airbnb["year_month"].apply(
-    lambda x:
-        "OCT-DEC" if x in ["2025-10", "2025-11", "2025-12"]
-        else "JAN-MARCH" if x in ["2026-01", "2026-02", "2026-03"]
-        else "APR-JUNE"
-)
+AIRBNB_INPUT = "data/processed/christchurch_listings_cleaned_with_sa2.csv"
+BONDS_INPUT = "data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv"
+OUTPUT_FILE = "data/processed/joined_airbnb_tenancy.csv"
 
 
-# Tenancy Services
+def create_airbnb_quarter(year_month):
+    """Convert an Airbnb year-month value into a year-quarter value."""
 
-# Create the quarter variable from the TimeFrame
-bonds["TimeFrame"] = pd.to_datetime(bonds["TimeFrame"])
-
-bonds["quarter"] = bonds["TimeFrame"].dt.month.map({
-    1: "JAN-MARCH",
-    4: "APR-JUNE",
-    7: "JULY-SEPT",
-    10: "OCT-DEC"
-})
+    date = pd.to_datetime(year_month, format="%Y-%m", errors="coerce")
+    return date.dt.to_period("Q").astype("string")
 
 
-# Check the quarters in both datasets
-print("Airbnb quarters:")
-print(airbnb["quarter"].value_counts())
+def create_bond_quarter(timeframe):
+    """Convert a Tenancy Services timeframe into a year-quarter value."""
 
-print("\nTenancy quarters:")
-print(bonds["quarter"].value_counts())
-
-
-# Keep overall rental statistics
-# "ALL" gives the overall value rather than a specific dwelling type or
-# number of bedrooms
-bonds_all = bonds[
-    (bonds["Dwelling Type"] == "ALL") &
-    (bonds["Number Of Beds"] == "ALL")
-].copy()
+    date = pd.to_datetime(timeframe, errors="coerce")
+    return date.dt.to_period("Q").astype("string")
 
 
-# Remove rows without a Location ID because they cannot be joined
-bonds_all = bonds_all.dropna(subset=["Location Id"])
+def main():
+    """Join Airbnb listings with Tenancy Services data by SA2 and quarter."""
+
+    airbnb = pd.read_csv(AIRBNB_INPUT)
+    bonds = pd.read_csv(BONDS_INPUT)
+
+    assert "year_month" in airbnb.columns, "Airbnb data must contain year_month."
+    assert "sa2_code" in airbnb.columns, "Airbnb data must contain sa2_code."
+    assert "TimeFrame" in bonds.columns, "Bond data must contain TimeFrame."
+    assert "Location Id" in bonds.columns, "Bond data must contain Location Id."
+
+    # Create a quarter from the actual dates so new months can be added
+    # without changing this code.
+    airbnb["quarter"] = create_airbnb_quarter(
+        airbnb["year_month"]
+    )
+
+    bonds["quarter"] = create_bond_quarter(
+        bonds["TimeFrame"]
+    )
+
+    assert airbnb["quarter"].notna().all(), (
+        "Every Airbnb observation must have a valid quarter.")
+    assert bonds["quarter"].notna().all(), (
+        "Every Tenancy Services observation must have a valid quarter.")
+
+    # Keep the overall rental statistics rather than statistics for a
+    # particular dwelling type or number of bedrooms.
+    bonds_all = bonds[
+        (bonds["Dwelling Type"] == "ALL") &
+        (bonds["Number Of Beds"] == "ALL")
+    ].copy()
+
+    # Remove rows without a Location ID because they cannot be joined
+    bonds_all = bonds_all.dropna(subset=["Location Id"])
+
+    # Convert the join columns to the same numeric type.
+    airbnb["sa2_code"] = pd.to_numeric(
+        airbnb["sa2_code"],
+        errors="coerce"
+    ).astype("Int64")
+
+    bonds_all["Location Id"] = pd.to_numeric(
+        bonds_all["Location Id"],
+        errors="coerce"
+    ).astype("Int64")
 
 
-# Check that each Location ID has only one record per quarter
-duplicates = bonds_all.duplicated(
-    subset=["Location Id", "quarter"]
-).sum()
+    duplicates = bonds_all.duplicated(
+        subset=["Location Id", "quarter"]
+    ).sum()
 
-print("\nDuplicate location-quarter combinations:", duplicates)
+    assert duplicates == 0, (
+        "Each Location Id and quarter must have at most one "
+        "Tenancy Services record."
+    )
 
-# Convert SA2 codes and Location IDs to numeric for joining
-airbnb["sa2_code"] = pd.to_numeric(
-    airbnb["sa2_code"], errors="coerce"
-).astype("Int64")
+    # A left join keeps every Airbnb listing, including listings without
+    # matching Tenancy Services data.
+    joined = airbnb.merge(
+        bonds_all,
+        left_on=["sa2_code", "quarter"],
+        right_on=["Location Id", "quarter"],
+        how="left",
+        validate="many_to_one"
+    )
 
-bonds_all["Location Id"] = pd.to_numeric(
-    bonds_all["Location Id"], errors="coerce"
-).astype("Int64")
-
-# Join the datasets using SA2 area and quarter
-# A left join keeps all Airbnb listings
-joined = airbnb.merge(
-    bonds_all,
-    left_on=["sa2_code", "quarter"],
-    right_on=["Location Id", "quarter"],
-    how="left"
-)
+    # Check how many Airbnb listings were matched.
+    matched = joined["Location Id"].notna().sum()
+    unmatched = joined["Location Id"].isna().sum()
 
 
-# Check that the join did not duplicate or remove Airbnb listings
-print("\n========== JOIN CHECKS ==========")
+    print("========== JOIN CHECKS ==========")
+    print("Airbnb rows before join:", len(airbnb))
+    print("Rows after join:", len(joined))
+    print("Airbnb listings matched to tenancy data:", matched)
+    print("Airbnb listings without matching tenancy data:", unmatched)
 
-print("Airbnb rows before join:", len(airbnb))
-print("Rows after join:", len(joined))
+    # Show the quarters used in the join.
+    print("\nAirbnb quarters:")
+    print(airbnb["quarter"].value_counts().sort_index())
 
-if len(joined) == len(airbnb):
-    print("Row count check: PASSED")
-else:
-    print("Row count check: WARNING - row count changed")
+    print("\nTenancy quarters:")
+    print(bonds_all["quarter"].value_counts().sort_index())
 
+    joined.to_csv(OUTPUT_FILE, index=False)
 
-# Check how many Airbnb listings were matched
-matched = joined["Location Id"].notna().sum()
-unmatched = joined["Location Id"].isna().sum()
-
-print("Airbnb listings matched to tenancy data:", matched)
-print("Airbnb listings without matching tenancy data:", unmatched)
+    print("\nJoined dataset saved to:")
+    print(OUTPUT_FILE)
 
 
-# Save the joined dataset
-output_path = "data/processed/joined_airbnb_tenancy.csv"
-joined.to_csv(output_path, index=False)
-
-print("\nJoined dataset saved to:")
-print(output_path)
+if __name__ == "__main__":
+    main()
