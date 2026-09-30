@@ -1,3 +1,9 @@
+#Loads the quarterly Tenancy Services dataset.
+#Converts TimeFrame values to dates.
+#Filters records from October 2025 through June 2026.
+#Prints the included timeframes and row count.
+#Saves the filtered data to tenancy_bonds_oct2025_jun2026.csv.
+
 import pandas as pd
 
 

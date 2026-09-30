@@ -1,3 +1,9 @@
+#Loads the filtered tenancy bond dataset.
+#Inspects its structure, data types, duplicates, missing values, and summary statistics.
+#Replaces missing location identifiers (-99) with null values.
+#Extracts the year and quarter from TimeFrame.
+#Converts numeric columns to numeric types and categorical columns to category types.
+#Saves the cleaned dataset to cleaned_tenancy_bonds_oct2025_jun2026.csv.
 
 from pathlib import Path
 import pandas as pd
@@ -5,41 +11,41 @@ import pandas as pd
 
 # 2. Load processed Tenancy Bond dataset
 
-df = pd.read_csv(
+tenancy_bond_data = pd.read_csv(
     "data/processed/tenancy_bonds_oct2025_jun2026.csv"
 )
 
 # Store original dimensions
-original_rows = len(df)
-original_columns = len(df.columns)
+original_rows = len(tenancy_bond_data)
+original_columns = len(tenancy_bond_data.columns)
 
 
 # 3. Inspect dataset before cleaning
 
 # Shape
 print("\nDataset shape:")
-print(df.shape)
+print(tenancy_bond_data.shape)
 
 # Column names
 print("\nColumn names:")
-print(df.columns.tolist())
+print(tenancy_bond_data.columns.tolist())
 
 # Data types
 print("\nData types:")
-print(df.dtypes)
+print(tenancy_bond_data.dtypes)
 
 # Missing values
 
 # Convert the dataset's missing-location sentinel to a null value.
-df["Location Id"] = df["Location Id"].replace(-99, pd.NA)
+tenancy_bond_data["Location Id"] = tenancy_bond_data["Location Id"].replace(-99, pd.NA)
 
 # Create year and quarter variables from TimeFrame
-df["TimeFrame"] = pd.to_datetime(df["TimeFrame"])
-df["year"] = df["TimeFrame"].dt.year
-df["quarter"] = df["TimeFrame"].dt.month
+tenancy_bond_data["TimeFrame"] = pd.to_datetime(tenancy_bond_data["TimeFrame"])
+tenancy_bond_data["year"] = tenancy_bond_data["TimeFrame"].dt.year
+tenancy_bond_data["quarter"] = tenancy_bond_data["TimeFrame"].dt.month
 
 # Convert the month number to the corresponding quarter
-df["quarter"] = df["quarter"].replace({
+tenancy_bond_data["quarter"] = tenancy_bond_data["quarter"].replace({
     1: "JAN-MARCH",
     4: "APR-JUNE",
     7: "JULY-SEPT",
@@ -47,17 +53,17 @@ df["quarter"] = df["quarter"].replace({
 })
 
 print("\nColumn names:")
-print(df.columns.tolist())
+print(tenancy_bond_data.columns.tolist())
 
 
 # number of duplicated rows
-duplicate_rows = df.duplicated().sum()
+duplicate_rows = tenancy_bond_data.duplicated().sum()
 
 print("\nDuplicate rows:")
 print(f"Number of duplicate rows: {duplicate_rows}")
 
-missing_count = df.isna().sum()
-missing_percent = (missing_count / len(df) * 100).round(2)
+missing_count = tenancy_bond_data.isna().sum()
+missing_percent = (missing_count / len(tenancy_bond_data) * 100).round(2)
 
 missing_summary = pd.DataFrame({
     "missing_count": missing_count,
@@ -73,10 +79,10 @@ print(missing_summary)
 
 # Summary statistics
 print("\nNumeric summary statistics:")
-print(df.describe().T)
+print(tenancy_bond_data.describe().T)
 
 print("\nText summary statistics:")
-print(df.describe(include=["object"]).T)
+print(tenancy_bond_data.describe(include=["object"]).T)
 
 #Setting number 
 
@@ -106,14 +112,14 @@ print(categorical_columns)
 
 
 for column in numeric_columns:
-    if column in df.columns:
-        df[column] = pd.to_numeric(df[column], errors="coerce")
+    if column in tenancy_bond_data.columns:
+        tenancy_bond_data[column] = pd.to_numeric(tenancy_bond_data[column], errors="coerce")
 
 for column in categorical_columns:
-    if column in df.columns:
-        df[column] = df[column].astype("category")    
+    if column in tenancy_bond_data.columns:
+        tenancy_bond_data[column] = tenancy_bond_data[column].astype("category")    
 
 
 # Save the filtered dataset
-df.to_csv("data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv",
+tenancy_bond_data.to_csv("data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv",
     index=False)
