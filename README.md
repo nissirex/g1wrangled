@@ -13,7 +13,7 @@ This repository has been created for our DATA201/422 group project. It will be u
 
 - `README.md` – overview of the project and repository
 - `.gitignore` – files and folders that Git should not track
-- `test1.py`, 'team_guidelines.md' – shared test file used to practise collaborative editing
+
 
 ## Dataset
 
