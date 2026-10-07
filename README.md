@@ -1,6 +1,6 @@
-# DATA422 Group Project
+# DATA201/422 Group Project
 
-This repository has been created for our DATA422 group project. It will be used to practise collaborative work using Git and GitHub and to store project files developed throughout the course.
+This repository has been created for our DATA201/422 group project. It will be used to practise collaborative work using Git and GitHub and to store project files developed throughout the course.
 
 ## Team Members
 
@@ -13,7 +13,7 @@ This repository has been created for our DATA422 group project. It will be used 
 
 - `README.md` – overview of the project and repository
 - `.gitignore` – files and folders that Git should not track
-- `test1.py`, 'team_guidelines.md' – shared test file used to practise collaborative editing
+
 
 ## Dataset
 
@@ -33,6 +33,35 @@ Each row in the dataset represents one Airbnb listing captured at the time the d
 
 The original dataset is stored locally by each team member and is not uploaded to GitHub due to its size.
 
+
+## API Key Setup
+
+The `07_airbnb_sa2_mapping.py` script requires a Stats NZ SA2 API key to perform the SA2 mapping. The API key is **not stored in this GitHub repository** for security reasons.
+
+Before running the pipeline, each user will need to:
+
+1. Obtain a Stats NZ/Koordinates API key with access to the required SA2 layer.
+2. Create a file named `api_key.txt` in the project root directory.
+3. Paste your API key into `api_key.txt` as the only contents of the file.
+4. Do not commit or push `api_key.txt` to GitHub.
+
+The required project structure is:
+
+```text
+g1wrangled/
+├── api_key.txt          # Created locally; not stored on GitHub
+├── config.json
+├── README.md
+├── scripts/
+└── data/
+```
+
+Once `api_key.txt` has been created in the project root, the SA2 mapping script and the full pipeline can access the key automatically.
+
+If `api_key.txt` is missing, the SA2 mapping step will not be able to query the Stats NZ layer.
+
+
+
 ## Automation
 
 The monthly Airbnb snapshots should be saved as uncompressed CSV files in `data/raw/`, using names such as `listings_July2026.csv`. The July and August 2026 files are included in the local raw-data folder. Then run the complete wrangling and analysis pipeline from the project root with one command:
@@ -43,7 +72,7 @@ python scripts/11_run_pipeline.py
 
 If GNU Make is installed, `make update` runs the same command. The default month range, input/output folders, tenancy-bond input and snapshot dates are stored in `config.json`. You can override the date range from the command line, for example `python scripts/11_run_pipeline.py --start-month 2025-10 --end-month 2026-08`.
 
-The run recreates the processed tables, SQLite database and plots under `data/processed/2025-10_to_2026-08/`. SA2 mapping also requires the local `api_key.txt` file, which is excluded from Git. The July snapshot date is configured as 16 July 2026; update that entry in `config.json` if the source capture date shown with your July download is different.
+The run recreates the processed tables, SQLite database and plots under `data/processed/2025-10_to_2026-08/`. SA2 mapping also requires the local `api_key.txt` file, which is excluded from Git (see API Key Setup section above for instructions). The July snapshot date is configured as 16 July 2026; update that entry in `config.json` if the source capture date shown with your July download is different.
 
 ## Data Dictionary
 
