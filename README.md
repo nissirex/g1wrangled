@@ -9,12 +9,6 @@ This repository has been created for our DATA201/422 group project. It will be u
 - Avish Prakash
 - Iliana Sarri
 
-## Repository Contents
-
-- `README.md` – overview of the project and repository
-- `.gitignore` – files and folders that Git should not track
-
-
 ## Dataset
 
 ### Data Sources
