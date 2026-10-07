@@ -1,3 +1,4 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 # Explore review recency, prices and the most-reviewed Christchurch listings.
 # Input: Combined listing CSV produced by script 01, before cleaning.
 # Output: Printed summaries and two displayed histograms.
@@ -7,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-input_path = "data/processed/christchurch_listings_oct2025_jun2026.csv"
+input_path = pipeline_paths["combined"]
 threshold = 1050
 top_proportion = 0.10
 
@@ -49,7 +50,7 @@ bins=30
 plt.xlabel("Days since last review")
 plt.ylabel("Number of listings")
 plt.title("Distribution of Days Since Last Review")
-plt.show()
+save_plot("review_recency.png")
 
 # Price distribution across monthly listing observations
 price = christchurch_data[['price']].copy()
@@ -66,7 +67,7 @@ plt.hist(clipped_data, bins=21, range=(0,threshold), edgecolor='black')
 plt.title('Price Distribution')
 plt.xlabel('Price')
 plt.ylabel('Frequency')
-plt.show()
+save_plot("price_distribution.png")
 
 # Top 10% of Christchurch properties by number of reviews
 

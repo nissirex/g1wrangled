@@ -23,7 +23,7 @@ This project uses the `listings.csv` summary dataset provided by [Inside Airbnb]
 
 - **Dataset:** Airbnb listings
 - **Geographical coverage:** New Zealand
-- **Dataset period:** June 2026
+- **Dataset period:** October 2025 to August 2026
 - **File name:** `listings.csv`
 - **File format:** CSV
 - **Source:** Inside Airbnb
@@ -32,6 +32,18 @@ This project uses the `listings.csv` summary dataset provided by [Inside Airbnb]
 Each row in the dataset represents one Airbnb listing captured at the time the data was collected. The dataset contains summary information about the listing, its host, geographical location, room type, price, minimum stay requirements, reviews, availability and licence details.
 
 The original dataset is stored locally by each team member and is not uploaded to GitHub due to its size.
+
+## Automation
+
+The monthly Airbnb snapshots should be saved as uncompressed CSV files in `data/raw/`, using names such as `listings_July2026.csv`. The July and August 2026 files are included in the local raw-data folder. Then run the complete wrangling and analysis pipeline from the project root with one command:
+
+```shell
+python scripts/11_run_pipeline.py
+```
+
+If GNU Make is installed, `make update` runs the same command. The default month range, input/output folders, tenancy-bond input and snapshot dates are stored in `config.json`. You can override the date range from the command line, for example `python scripts/11_run_pipeline.py --start-month 2025-10 --end-month 2026-08`.
+
+The run recreates the processed tables, SQLite database and plots under `data/processed/2025-10_to_2026-08/`. SA2 mapping also requires the local `api_key.txt` file, which is excluded from Git. The July snapshot date is configured as 16 July 2026; update that entry in `config.json` if the source capture date shown with your July download is different.
 
 ## Data Dictionary
 
@@ -60,7 +72,7 @@ This project also uses the `Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv` summ
 
 - **Dataset:** Rental bond data
 - **Geographical coverage:** New Zealand
-- **Dataset period:** January 2020 to April 2026
+- **Dataset period:** January 2020 to September 2026
 - **File name:** `Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv`
 - **File format:** CSV
 - **Source:** Tenancy Services website
@@ -111,7 +123,9 @@ data/
 │   ├── listings_March2026.csv
 │   ├── listings_April2026.csv
 │   ├── listings_May2026.csv
-│   └── listings_June2026.csv
+│   ├── listings_June2026.csv
+│   ├── listings_July2026.csv
+│   └── listings_August2026.csv
 └── processed/
 ```
 
@@ -121,16 +135,17 @@ The Python scripts are organised according to the main stages of the Christchurc
 
 | Script | Description |
 | --- | --- |
-| `01_data_preparation.py` | Loads and combines the monthly Airbnb datasets, filters the data to Christchurch, and creates the processed Christchurch dataset covering October 2025 to June 2026. |
+| `01_data_preparation.py` | Loads and combines the selected monthly Airbnb datasets, filters the data to Christchurch, and creates the processed Christchurch dataset. |
 | `02_descriptive_statistics.py` | Generates descriptive statistics to explore the main characteristics of the processed Christchurch Airbnb dataset. |
 | `03_analysis_and_visualisation.py` | Performs further analysis and creates visualisations of the Christchurch Airbnb data. |
 | `04_clean_listing.py` | Cleans the processed Christchurch Airbnb dataset by removing unnecessary columns, correcting data types, handling missing values, checking data quality, and preparing the final dataset for later analysis. |
-| `05_filter_bond_timeframe.py` | Filters the timeframe of the Quarterly Tenancy data to cover the same months as the Christchurch Airbnb data and creates the processed tenancy bonds dataset covering October 2025 to June 2026|
+| `05_filter_bond_timeframe.py` | Filters the Quarterly Tenancy data to the quarters covering the selected Christchurch Airbnb months. |
 | `06_clean_bond.py` | Produces statistics for missingness and summaries. Cleans the data by correcting data types, making a new column for quarterly intervals.|
 | `07_airbnb_sa2_mapping.py` | Takes the cleaned Airbnb dataset and matches the coordinates to SA2 labels for each listing.|
 | `08_join_datasets.py` | Merges the cleaned Airbnb dataset with the cleaned tenancy bond dataset by SA2 location and quarter so that each Airbnb listing is matched to the corresponding rental-market data for that area and time period.|
 | `09_comparing_joined_dataset.py` | Produces statistics for median Airbnbprice in christchurch central, price difference between short and long-term rentals, and comparing how many Airbnb and rental properties there are in each location.|
 | `10_sqlite_join.py` | Stores both prepared datasets in SQLite, joins them using SQL by SA2 location and year-quarter, and exports the joined dataset. |
+| `11_run_pipeline.py` | Orchestrates scripts 01–10 for the month range selected in `config.json`. |
 
 ## Christchurch Airbnb Data Cleaning
 

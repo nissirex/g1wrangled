@@ -1,3 +1,4 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 #Loads the joined Airbnb and tenancy bond dataset.
 #Calculates the median Airbnb price for Christchurch Central.
 #Compares nightly Airbnb prices with weekly tenancy rents converted to nightly rates.
@@ -12,7 +13,7 @@ import matplotlib.pyplot as plt
 
 # Load joined data
 joined_data = pd.read_csv(
-    "data/processed/joined_airbnb_tenancy.csv"
+    pipeline_paths["joined"]
 )
 
 
@@ -54,14 +55,18 @@ print("\nMedian price difference by location:")
 print(price_gap.to_string(index=False))
 
 
-largest_gap = price_gap.iloc[0]
+if not price_gap.empty:
+    largest_gap = price_gap.iloc[0]
 
-print("\nLocation with largest median price gap:")
-print("Location:", largest_gap["sa2_name"])
-print("SA2 code:", largest_gap["sa2_code"])
-print(
-    f"Median difference: ${largest_gap['price_difference']:,.2f} per night"
-)
+    print("\nLocation with largest median price gap:")
+    print("Location:", largest_gap["sa2_name"])
+    print("SA2 code:", largest_gap["sa2_code"])
+    print(
+        f"Median difference: ${largest_gap['price_difference']:,.2f} per night"
+    )
+
+else:
+    print("No matched price data for this period; price-gap ranking unavailable.")
 
 # Keep observations with a price difference and ward name
 plot_data = joined_data.dropna(
@@ -80,24 +85,28 @@ ward_summary = (
 
 print(ward_summary)
 
-fig, ax = plt.subplots(figsize=(12, 8))
+if not plot_data.empty:
+    fig, ax = plt.subplots(figsize=(12, 8))
 
-plot_data.boxplot(
-    column="price_difference",
-    by="neighbourhood",
-    vert=False,
-    showfliers=False,
-    ax=ax, grid=False
-)
+    plot_data.boxplot(
+        column="price_difference",
+        by="neighbourhood",
+        vert=False,
+        showfliers=False,
+        ax=ax, grid=False
+    )
 
-ax.set_title("Nightly price differences by Christchurch ward")
-fig.suptitle("")
-ax.set_xlabel("Airbnb price − weekly tenancy rent ÷ 7 (NZ$)")
-ax.set_ylabel("Ward")
+    ax.set_title("Nightly price differences by Christchurch ward")
+    fig.suptitle("")
+    ax.set_xlabel("Airbnb price − weekly tenancy rent ÷ 7 (NZ$)")
+    ax.set_ylabel("Ward")
 
-fig.tight_layout()
-plt.show()
+    fig.tight_layout()
+    save_plot("price_gaps.png")
 
+
+else:
+    print("No matched price data to plot.")
 
 # Number of Airbnbs in each location
 airbnb_counts = (

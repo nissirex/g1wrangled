@@ -1,9 +1,10 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 import pandas as pd
 
 
-AIRBNB_INPUT = "data/processed/christchurch_listings_cleaned_with_sa2.csv"
-BONDS_INPUT = "data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv"
-OUTPUT_FILE = "data/processed/joined_airbnb_tenancy.csv"
+AIRBNB_INPUT = pipeline_paths["mapped"]
+BONDS_INPUT = pipeline_paths["cleaned_bonds"]
+OUTPUT_FILE = pipeline_paths["joined"]
 
 
 def create_airbnb_quarter(year_month):
@@ -67,6 +68,8 @@ def main():
         errors="coerce"
     ).astype("Int64")
 
+
+    bonds_all = bonds_all.dropna(subset=["Location Id"])
 
     duplicates = bonds_all.duplicated(
         subset=["Location Id", "quarter"]

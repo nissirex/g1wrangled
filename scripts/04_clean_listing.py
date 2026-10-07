@@ -1,3 +1,4 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 # Clean the combined Christchurch listings: correct types, tidy text,
 # remove unused columns and duplicate rows, and fill missing review rates
 # only for listings with no reviews. Keep missing prices and minimum nights.
@@ -11,12 +12,12 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-output_path = Path("data/processed/christchurch_listings_cleaned.csv")
+output_path = Path(pipeline_paths["cleaned"])
 
 # Load processed Christchurch dataset
 
 christchurch_data = pd.read_csv(
-    "data/processed/christchurch_listings_oct2025_jun2026.csv",
+    pipeline_paths["combined"],
     dtype={"host_id": "string"}
 )
 

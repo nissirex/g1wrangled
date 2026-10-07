@@ -1,3 +1,4 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 #Loads the filtered tenancy bond dataset.
 #Inspects its structure, data types, duplicates, missing values, and summary statistics.
 #Replaces missing location identifiers (-99) with null values.
@@ -12,7 +13,7 @@ import pandas as pd
 # 2. Load processed Tenancy Bond dataset
 
 tenancy_bond_data = pd.read_csv(
-    "data/processed/tenancy_bonds_oct2025_jun2026.csv"
+    pipeline_paths["bonds"]
 )
 
 # Store original dimensions
@@ -121,5 +122,5 @@ for column in categorical_columns:
 
 
 # Save the filtered dataset
-tenancy_bond_data.to_csv("data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv",
+tenancy_bond_data.to_csv(pipeline_paths["cleaned_bonds"],
     index=False)

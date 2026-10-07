@@ -1,3 +1,4 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
 # Describe the combined Christchurch listings before cleaning.
 # Input: Combined listing CSV produced by script 01.
 # Output: Numerical, categorical, identifier, date and missing-value summaries
@@ -5,7 +6,7 @@
 
 import pandas as pd
 
-input_path = "data/processed/christchurch_listings_oct2025_jun2026.csv"
+input_path = pipeline_paths["combined"]
 
 christchurch_data = pd.read_csv(input_path)
 

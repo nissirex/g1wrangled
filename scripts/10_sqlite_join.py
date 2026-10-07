@@ -1,11 +1,13 @@
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
+from contextlib import closing
 import sqlite3
 import pandas as pd
 
 
-AIRBNB_INPUT = "data/processed/christchurch_listings_cleaned_with_sa2.csv"
-BONDS_INPUT = "data/processed/cleaned_tenancy_bonds_oct2025_jun2026.csv"
-DATABASE_FILE = "data/processed/christchurch_rentals.sqlite"
-OUTPUT_FILE = "data/processed/joined_airbnb_tenancy_sql.csv"
+AIRBNB_INPUT = pipeline_paths["mapped"]
+BONDS_INPUT = pipeline_paths["cleaned_bonds"]
+DATABASE_FILE = pipeline_paths["database"]
+OUTPUT_FILE = pipeline_paths["sql_joined"]
 
 
 def main():
@@ -26,7 +28,7 @@ def main():
         .astype(str)
     )
 
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with closing(sqlite3.connect(DATABASE_FILE)) as conn:
 
         airbnb.to_sql(
             "airbnb", conn, if_exists="replace", index=False

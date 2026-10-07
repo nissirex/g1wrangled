@@ -1,14 +1,12 @@
-#Loads the quarterly Tenancy Services dataset.
-#Converts TimeFrame values to dates.
-#Filters records from October 2025 through June 2026.
-#Prints the included timeframes and row count.
-#Saves the filtered data to tenancy_bonds_oct2025_jun2026.csv.
+# Pipeline-compatible copy: run using 11_run_pipeline.py.
+# Loads the quarterly Tenancy Services dataset.
+# Filters to quarters covering the selected Airbnb month range.
 
 import pandas as pd
-
+from pathlib import Path
 
 # Load the original Tenancy Services dataset
-bond_data = pd.read_csv("data/raw/Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv")
+bond_data = pd.read_csv(pipeline_paths["bond_source"])
 
 
 # Convert TimeFrame into a date
@@ -18,8 +16,8 @@ bond_data["TimeFrame"] = pd.to_datetime(bond_data["TimeFrame"])
 # Keep the quarters that cover the same period as the
 # Christchurch listings dataset: October 2025 to June 2026
 bond_data = bond_data[
-    (bond_data["TimeFrame"] >= "2025-10-01") &
-    (bond_data["TimeFrame"] <= "2026-04-01")
+    (bond_data["TimeFrame"] >= quarter_start) &
+    (bond_data["TimeFrame"] <= quarter_end)
 ]
 
 
@@ -32,5 +30,7 @@ print(len(bond_data))
 
 
 # Save the filtered dataset
-bond_data.to_csv("data/processed/tenancy_bonds_oct2025_jun2026.csv",
+bond_data.to_csv(pipeline_paths["bonds"],
     index=False)
+print("Saved bond file:", Path(pipeline_paths["bonds"]).resolve())
+print("File exists:", Path(pipeline_paths["bonds"]).is_file())

@@ -1,0 +1,20 @@
+{
+  "start_month": "2025-10",
+  "end_month": "2026-08",
+  "raw_data_dir": "data/raw",
+  "processed_data_dir": "data/processed",
+  "bond_data_file": "data/raw/Detailed-Quarterly-Tenancy-Q1-2020-Q3-2026.csv",
+  "snapshot_dates": {
+    "listings_October2025.csv": "05/10/2025",
+    "listings_November2025.csv": "07/11/2025",
+    "listings_December2025.csv": "11/12/2025",
+    "listings_January2026.csv": "16/01/2026",
+    "listings_February2026.csv": "13/02/2026",
+    "listings_March2026.csv": "17/03/2026",
+    "listings_April2026.csv": "16/04/2026",
+    "listings_May2026.csv": "16/05/2026",
+    "listings_June2026.csv": "23/06/2026",
+    "listings_July2026.csv": "16/07/2026",
+    "listings_August2026.csv": "13/08/2026"
+  }
+}
